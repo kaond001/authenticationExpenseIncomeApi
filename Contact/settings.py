@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'Api',
     'expenses',
-    'income'
+    'income',
+    'chart'
 ]
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
