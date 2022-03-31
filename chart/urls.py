@@ -3,5 +3,8 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.ExpenseSummaryStats.as_view(), name="expenses_category_summary"),
+    path('expense_category_summary/', views.ExpenseSummaryStats.as_view(),
+         name="statistics"),
+    path('income_source_summary/', views.IncomeSummaryStats.as_view(),
+         name="statistics"),
 ]

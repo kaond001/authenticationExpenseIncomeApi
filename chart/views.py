@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status, response
 import datetime
 from expenses.models import Expense
+from income.models import Income
 # Create your views here.
 
 
@@ -35,3 +36,35 @@ class ExpenseSummaryStats(APIView):
                 )
 
         return response.Response({'category_data': final}, status=status.HTTP_200_OK)
+
+
+class IncomeSummaryStats(APIView):
+
+    def get_amount_for_source(self, income_list, source):
+        # print(income_list)
+        income = income_list.filter(source=source)
+        amount = 0
+
+        for i in income:
+            amount += i.amount
+        return {'amount': str(amount)}
+
+    def get_source(self, income):
+        return income.source
+
+    def get(self, request):
+        todays_date = datetime.date.today()
+        ayear_ago = todays_date-datetime.timedelta(days=30*12)
+        incomes = Income.objects.filter(
+            owner=request.user, date__gte=ayear_ago, date__lte=todays_date)
+        # print(incomes)
+        final = {}
+        sources = list(set(map(self.get_source, incomes)))
+
+        for i in incomes:
+            for source in sources:
+                final[source] = self.get_amount_for_source(
+                    incomes, source
+                )
+
+        return response.Response({'income_data': final}, status=status.HTTP_200_OK)
