@@ -3,10 +3,10 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
-from rest_framework import status, generics, views
+from rest_framework import status, generics, views, permissions
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework.decorators import api_view, permission_classes
-from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, EmailVerificationSerializer, ResetPasswordEmailRequestSerializer, SetNewPasswordSerializer
+from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, EmailVerificationSerializer, ResetPasswordEmailRequestSerializer, SetNewPasswordSerializer, LogoutSerializer
 from .models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from .util import Util
@@ -155,22 +155,23 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
 
 
+class LogoutAPIView(generics.GenericAPIView):
+    serializer_class = LogoutSerializer
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getRoutes(request):
     routes = ['api/token', 'api/token/refresh']
 
     return Response(routes)
-
-
-@api_view(['POST'])
-def SaveUser(request):
-    if request.method == 'POST':
-        user_data = JSONParser().parse(request)
-        user_serializer = UserSerializer(data=user_data)
-        if user_serializer.is_valid():
-            user_serializer.save()
-            return JsonResponse(user_serializer.data,
-                                status=status.HTTP_201_CREATED)
-        return JsonResponse(user_serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
