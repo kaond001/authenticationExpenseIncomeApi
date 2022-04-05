@@ -26,7 +26,7 @@ schema_view = get_schema_view(
       description="Test description",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="yusuphkaondo@gmail.com"),
-      license=openapi.License(name="Developed By Artificial intelligence Tanzania (AiT)"),
+      license=openapi.License(name="Developed By AcuteLab"),
    ),
    public=True,
    permission_classes=[permissions.AllowAny],
